@@ -25,7 +25,7 @@ exports.createDirect = async (data, id, rescatistaId) => {
       _id: rescatistaId,
       nombre: nombreRescatista,
       telefono: telefonoRescatista,
-      fechaRescatista,
+      fechaRescatista: fechaRescate,
       animales: []
     }).save();
   }
