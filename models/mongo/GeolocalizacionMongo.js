@@ -5,6 +5,7 @@ const GeolocalizacionSchema = new mongoose.Schema({
   latitud: { type: Number, required: true },
   longitud: { type: Number, required: true },
   descripcion: { type: String },
+  animalId: { type: String, ref: 'Animal' },
   fechaRegistro: { type: Date, default: Date.now }
 }, { _id: false, timestamps: true });
 

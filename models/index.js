@@ -19,6 +19,8 @@ const Geolocalizacion = require('./postgres/Geolocalizacion.pg');
 Animal.belongsTo(Rescatista, { foreignKey: 'rescatista_id', as: 'rescatista' });
 Rescatista.hasMany(Animal, { foreignKey: 'rescatista_id', as: 'animales' });
 Rescatista.belongsTo(Geolocalizacion, { foreignKey: 'geolocalizacionId', as: 'ubicacion' });
+Geolocalizacion.belongsTo(Animal, { foreignKey: 'animalId', as: 'animal' });
+Animal.hasMany(Geolocalizacion, { foreignKey: 'animalId', as: 'historialUbicaciones' });
 
 // 🔁 Relaciones Animal - Otras entidades
 Animal.hasMany(Adoption, { foreignKey: 'animalId' });

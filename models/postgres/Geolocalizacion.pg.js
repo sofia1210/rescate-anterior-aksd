@@ -10,6 +10,14 @@ const Geolocalizacion = sequelize.define('Geolocalizacion', {
   latitud: { type: DataTypes.DOUBLE, allowNull: false },
   longitud: { type: DataTypes.DOUBLE, allowNull: false },
   descripcion: { type: DataTypes.STRING },
+  animalId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'animales',
+      key: 'id'
+    }
+  },
   fechaRegistro: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
 }, {
   tableName: 'geolocalizaciones',
