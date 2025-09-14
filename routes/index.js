@@ -18,6 +18,8 @@ const geolocalizacionRoutes = require('./geolocalizacionRoutes');
 // Montar cada ruta con su endpoint base
 router.use('/animales', animalRoutes);
 router.use('/adoptions', adoptionRoutes);
+// Alias en español para compatibilidad con el frontend
+router.use('/adopciones', adoptionRoutes);
 router.use('/evaluations', evaluationRoutes);
 router.use('/transfers', transferRoutes);
 router.use('/users', userRoutes);

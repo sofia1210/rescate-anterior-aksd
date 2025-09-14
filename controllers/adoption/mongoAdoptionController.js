@@ -62,3 +62,13 @@ exports.deleteDirect = async (id) => {
   if (!deleted) throw new Error('Adopción no encontrada en MongoDB');
   return { message: 'Adopción eliminada en MongoDB' };
 };
+
+// Animales candidatos a adopción (no adoptados ni liberados)
+exports.getCandidatesDirect = async () => {
+  const aprobadas = await AdoptionMongo.find({ estado: 'Aprobada' }).select('animalId');
+  const adoptedIds = new Set(aprobadas.map(a => String(a.animalId)));
+  const allDomestic = await AnimalMongo.find({ tipo: 'Doméstico' }).select('id _id nombre tipo');
+  return allDomestic
+    .map(a => ({ id: a._id, nombre: a.nombre, tipo: a.tipo }))
+    .filter(a => !adoptedIds.has(a.id));
+};

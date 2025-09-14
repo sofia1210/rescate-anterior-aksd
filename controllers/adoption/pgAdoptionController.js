@@ -58,3 +58,11 @@ exports.deleteDirect = async (id) => {
   if (!deleted) throw new Error('Adopción no encontrada en PostgreSQL');
   return { message: 'Adopción eliminada en PostgreSQL' };
 };
+
+// Animales candidatos a adopción (no adoptados)
+exports.getCandidatesDirect = async () => {
+  const aprobadas = await AdoptionSQL.findAll({ where: { estado: 'Aprobada' }, attributes: ['animalId'], raw: true });
+  const adoptedIds = new Set(aprobadas.map(a => a.animalId));
+  const allDomestic = await AnimalSQL.findAll({ where: { tipo: 'Doméstico' }, attributes: ['id', 'nombre', 'tipo'], raw: true });
+  return allDomestic.filter(a => !adoptedIds.has(a.id));
+};

@@ -5,7 +5,7 @@ const mongo = require('../rescatista/mongoRescatistaController');
 exports.create = async (req, res) => {
   try {
     const id = uuidv4();
-    const imagen = req.file ? req.file.filename : null;
+    const imagen = req.file ? `/uploads/${req.file.filename}` : null;
     const data = { ...req.body, imagen };
 
     const pgResult = await pg.createDirect({ ...data, id });
@@ -39,7 +39,7 @@ exports.getById = async (req, res) => {
 };
 exports.update = async (req, res) => {
   try {
-    const imagen = req.file ? req.file.filename : null;
+    const imagen = req.file ? `/uploads/${req.file.filename}` : null;
     const data = imagen ? { ...req.body, imagen } : req.body;
 
     const pgResult = await pg.updateDirect(req.params.id, data);

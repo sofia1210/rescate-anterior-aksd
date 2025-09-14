@@ -6,8 +6,10 @@ exports.create = async (req, res) => {
   try {
     const id = uuidv4();
     const rescatistaId = uuidv4(); // ID compartido para el rescatista
-    const imagen = req.file ? req.file.filename : null;
-    const data = { ...req.body, imagen };
+    const imagen = req.file ? `/uploads/${req.file.filename}` : null;
+    const maybeEdad = typeof req.body.edad === 'string' ? parseInt(req.body.edad, 10) : req.body.edad;
+    const edad = Number.isFinite(maybeEdad) ? maybeEdad : null;
+    const data = { ...req.body, imagen, edad };
 
     const pgResult = await pg.createDirect(data, id, rescatistaId);
     const mongoResult = await mongo.createDirect(data, id, rescatistaId);
@@ -40,8 +42,11 @@ exports.getById = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const imagen = req.file ? req.file.filename : null;
-    const data = imagen ? { ...req.body, imagen } : req.body;
+    const imagen = req.file ? `/uploads/${req.file.filename}` : null;
+    const maybeEdad = typeof req.body.edad === 'string' ? parseInt(req.body.edad, 10) : req.body.edad;
+    const edad = Number.isFinite(maybeEdad) ? maybeEdad : null;
+    const base = imagen ? { ...req.body, imagen } : req.body;
+    const data = { ...base, ...(req.body.edad !== undefined ? { edad } : {}) };
 
     const pgResult = await pg.updateDirect(req.params.id, data);
     const mongoResult = await mongo.updateDirect(req.params.id, data);

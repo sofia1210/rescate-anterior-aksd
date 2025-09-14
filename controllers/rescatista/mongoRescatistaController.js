@@ -13,13 +13,18 @@ exports.createDirect = async (data) => {
     descripcion
   } = data;
 
-  const geoId = uuidv4();
-  await new GeolocalizacionMongo({
-    _id: geoId,
-    latitud,
-    longitud,
-    descripcion
-  }).save();
+  let geoId = null;
+  const lat = typeof latitud === 'string' ? parseFloat(latitud) : latitud;
+  const lon = typeof longitud === 'string' ? parseFloat(longitud) : longitud;
+  if (Number.isFinite(lat) && Number.isFinite(lon)) {
+    geoId = uuidv4();
+    await new GeolocalizacionMongo({
+      _id: geoId,
+      latitud: lat,
+      longitud: lon,
+      descripcion
+    }).save();
+  }
 
   return await new RescatistaMongo({
     _id: data._id,

@@ -15,13 +15,18 @@ exports.createDirect = async (data) => {
     descripcion
   } = data;
 
-  const geoId = uuidv4();
-  await GeolocalizacionSQL.create({
-    id: geoId,
-    latitud,
-    longitud,
-    descripcion
-  });
+  let geoId = null;
+  const lat = typeof latitud === 'string' ? parseFloat(latitud) : latitud;
+  const lon = typeof longitud === 'string' ? parseFloat(longitud) : longitud;
+  if (Number.isFinite(lat) && Number.isFinite(lon)) {
+    geoId = uuidv4();
+    await GeolocalizacionSQL.create({
+      id: geoId,
+      latitud: lat,
+      longitud: lon,
+      descripcion
+    });
+  }
 
   return await RescatistaSQL.create({
     id: data.id,
