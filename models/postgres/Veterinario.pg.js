@@ -12,12 +12,19 @@ const Veterinario = sequelize.define('Veterinario', {
   nombre: { type: DataTypes.STRING, allowNull: false },
   telefono: { type: DataTypes.STRING, allowNull: false },
   especialidad: { type: DataTypes.STRING },
-  email: { type: DataTypes.STRING, unique: true },
+  email: { type: DataTypes.STRING },
   imagen: { type: DataTypes.STRING }
 
 }, {
   tableName: 'veterinarios',
-  timestamps: true
+  timestamps: true,
+  indexes: [
+    {
+      unique: true,
+      fields: ['email'],
+      name: 'UQ_veterinarios_email'
+    }
+  ]
 });
 
 module.exports = Veterinario;

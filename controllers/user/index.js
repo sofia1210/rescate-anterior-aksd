@@ -2,7 +2,8 @@ const { v4: uuidv4 } = require("uuid");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const pg = require("../user/pgUserController");
-const mongo = require("../user/mongoUserController");
+const MONGO_ENABLED = (process.env.MONGO_ENABLED || 'true') === 'true';
+const mongo = MONGO_ENABLED ? require("../user/mongoUserController") : null;
 
 exports.create = async (req, res) => {
   try {
@@ -10,9 +11,21 @@ exports.create = async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const bodyWithHash = { ...req.body, password: hashedPassword };
     const pgResult = await pg.createDirect(bodyWithHash, id);
-    const mongoResult = await mongo.createDirect(bodyWithHash, id);
+    let mongoResult = null;
+    if (MONGO_ENABLED && mongo) {
+      try {
+        mongoResult = await mongo.createDirect(bodyWithHash, id);
+      } catch (mongoErr) {
+        console.warn('[Users][create] Mongo warning:', mongoErr?.message || mongoErr);
+      }
+    }
     res.status(201).json({ postgres: pgResult, mongo: mongoResult });
   } catch (err) {
+    console.error('[Users][create] error:', err);
+    // MSSQL duplicate key errors: 2627 (unique constraint), 2601 (duplicate index)
+    if (err && (err.number === 2627 || err.number === 2601)) {
+      return res.status(409).json({ error: 'Email o username ya están registrados' });
+    }
     res.status(500).json({ error: err.message });
   }
 };

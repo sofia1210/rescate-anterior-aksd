@@ -29,20 +29,27 @@ app.use((req, res, next) => {
   next();
 });
 
-// 🔌 Conectar a MongoDB
-require('./config/database');
+// 🔌 Conectar a MongoDB (opcional)
+const MONGO_ENABLED = (process.env.MONGO_ENABLED || 'true') === 'true';
+if (MONGO_ENABLED) {
+  require('./config/database');
+}
 
-// 🔌 Cargar modelos y asociaciones de PostgreSQL
+// Cargar modelos y asociaciones de SQL
 const db = require('./models');
 const sequelize = db.sequelize;
 
 // 🌐 Rutas agrupadas
 const apiRoutes = require('./routes');
+const { Logger } = require('sequelize/lib/utils/logger');
 app.use('/api', apiRoutes);
 
 // 🏠 Ruta base
 app.get('/', (req, res) => {
-  res.send('✅ API funcionando con PostgreSQL y MongoDB en paralelo');
+  const dialect = (process.env.DB_DIALECT || 'postgres').toLowerCase();
+  const sqlLabel = dialect === 'mssql' ? 'SQL Server' : 'PostgreSQL';
+  const mongoLabel = MONGO_ENABLED ? ' y MongoDB en paralelo' : '';
+  res.send(`✅ API funcionando con ${sqlLabel}${mongoLabel}`);
 });
 
 // 🚀 Iniciar servidor
@@ -52,14 +59,17 @@ app.listen(PORT, async () => {
 
   try {
     await sequelize.authenticate();
-    console.log('✅ Conectado a PostgreSQL correctamente');
+    const dialect = (process.env.DB_DIALECT || 'postgres').toLowerCase();
+    console.log(`✅ Conectado a ${dialect === 'mssql' ? 'SQL Server' : 'PostgreSQL'} correctamente`);
 
     // ⚙️ Sincronización no destructiva para evitar pérdida de datos
     await sequelize.sync({ alter: true });
 
-    console.log('📦 Tablas recreadas y modelos sincronizados con PostgreSQL');
+    const dialect2 = (process.env.DB_DIALECT || 'postgres').toLowerCase();
+    console.log(`📦 Tablas recreadas y modelos sincronizados con ${dialect2 === 'mssql' ? 'SQL Server' : 'PostgreSQL'}`);
   } catch (error) {
-    console.error('❌ Error al conectar o sincronizar con PostgreSQL:', error.message);
+    const dialect3 = (process.env.DB_DIALECT || 'postgres').toLowerCase();
+    console.error(`❌ Error al conectar o sincronizar con ${dialect3 === 'mssql' ? 'SQL Server' : 'PostgreSQL'}:`, error.message);
   }
 });
 
