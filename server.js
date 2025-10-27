@@ -13,6 +13,8 @@ app.use(express.json());
 
 // 🖼️ Servir archivos estáticos de la carpeta uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Alias para servir estáticos también bajo el prefijo /api
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 📝 Logger simple de solicitudes y respuestas
 app.use((req, res, next) => {
